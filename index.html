@@ -10,118 +10,155 @@
       --bg:#0b0f12;
       --panel:#0f1720;
       --muted:#94a3b8;
-      --accent:#9333ea;   /* purple */
-      --accent-2:#06b6d4; /* cyan */
+      --accent:#9333ea;
+      --accent-2:#06b6d4;
     }
-    body { background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; }
-    html { scroll-behavior: smooth; }
-    .hidden { display:none; }
+    body { background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; color:#e6eef6 }
+    .card { background:var(--panel); border:1px solid #1f2937; border-radius:12px; padding:1.25rem; }
+    .muted { color:var(--muted) }
   </style>
 </head>
-<body class="min-h-screen text-slate-100">
+<body class="min-h-screen">
 
-  <!-- Header -->
+  <!-- header -->
   <header class="w-full border-b border-slate-800">
     <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-md bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] flex items-center justify-center font-bold text-black">SM</div>
+        <div class="w-10 h-10 rounded-md bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] flex items-center justify-center font-bold text-black">SM</div>
         <div>
           <h1 class="text-lg font-semibold">Stellar Multi-Tool</h1>
-          <p class="text-xs text-[color:var(--muted)] -mt-0.5">OSINT & Info Tools</p>
+          <p class="text-xs muted -mt-0.5">OSINT & Info Tools</p>
         </div>
       </div>
-      <nav class="flex items-center gap-3">
-        <button onclick="showSection('breach')" class="px-4 py-2 rounded-md bg-[color:var(--panel)] text-sm border border-slate-800 hover:brightness-105">Breach Checker</button>
-        <button onclick="showSection('phone')" class="px-4 py-2 rounded-md bg-[color:var(--panel)] text-sm border border-slate-800 hover:brightness-105">Phone Lookup</button>
-        <button onclick="showSection('social')" class="px-4 py-2 rounded-md bg-[color:var(--panel)] text-sm border border-slate-800 hover:brightness-105">Social Lookup</button>
-      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="/dashboard.html" id="dashboardLink" class="px-4 py-2 rounded-md bg-[var(--panel)] text-sm border border-slate-800 hover:brightness-105">Dashboard</a>
+        <button id="accessBtn" class="px-4 py-2 rounded-md bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-black font-semibold">Access</button>
+      </div>
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="max-w-6xl mx-auto px-6 py-12">
+  <!-- main -->
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-8">
+    <section class="grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="text-4xl font-extrabold leading-tight">Stellar Multi-Tool</h2>
+        <p class="muted mt-3">A lightweight OSINT toolkit with Breach Checker, Phone Lookup, Social Lookup, IP Info, DNS Lookup, Joke, UUID and more. Keys required to use tools — simple free trial keys supported.</p>
+        <div class="mt-6 flex gap-3">
+          <a class="px-5 py-3 rounded-md bg-[var(--accent)] font-semibold text-black shadow" href="/dashboard.html">Go to Dashboard</a>
+        </div>
+      </div>
 
-    <!-- Breach Checker -->
-    <section id="breach" class="tool-section">
-      <h2 class="text-2xl font-bold mb-4">🔒 Breach Checker</h2>
-      <div class="rounded-xl border border-slate-800 bg-[color:var(--panel)] p-6">
-        <p class="text-sm text-[color:var(--muted)] mb-4">Check if an email appears in known breaches.</p>
-        <input id="emailInput" type="email" placeholder="Enter Email" class="w-full p-3 bg-gray-900 text-white rounded mb-4">
-        <button onclick="checkBreach()" class="px-5 py-3 rounded-md bg-[color:var(--accent)] font-semibold text-black shadow hover:brightness-110">Check Email</button>
-        <pre id="breachResult" class="mt-4 text-sm whitespace-pre-wrap"></pre>
+      <div class="card">
+        <h3 class="text-xl font-bold mb-2">Available Tools</h3>
+        <ul class="mt-3 space-y-2">
+          <li class="flex items-start gap-3"><strong>🔒 Breach Checker</strong><span class="muted ml-2">Email breach lookups (key required)</span></li>
+          <li class="flex items-start gap-3"><strong>📱 Phone Lookup</strong><span class="muted ml-2">Carrier & validation (key required)</span></li>
+          <li class="flex items-start gap-3"><strong>🌐 Social Lookup</strong><span class="muted ml-2">Check username existence across sites (key required)</span></li>
+          <li class="flex items-start gap-3"><strong>🌍 IP Info</strong><span class="muted ml-2">ipapi.co</span></li>
+          <li class="flex items-start gap-3"><strong>🔎 DNS Lookup</strong><span class="muted ml-2">dns.google</span></li>
+          <li class="flex items-start gap-3"><strong>😂 Random Joke</strong><span class="muted ml-2">jokeapi</span></li>
+          <li class="flex items-start gap-3"><strong>🆔 UUID Generator</strong><span class="muted ml-2">Local generator</span></li>
+        </ul>
+        <p class="muted text-xs mt-4">Note: Tools that require external APIs use serverless API routes so your keys remain hidden.</p>
       </div>
     </section>
 
-    <!-- Phone Lookup -->
-    <section id="phone" class="tool-section hidden">
-      <h2 class="text-2xl font-bold mb-4">📱 Phone Lookup</h2>
-      <div class="rounded-xl border border-slate-800 bg-[color:var(--panel)] p-6">
-        <p class="text-sm text-[color:var(--muted)] mb-4">Validate phone numbers using API.</p>
-        <input id="phoneInput" type="text" placeholder="Enter Phone Number" class="w-full p-3 bg-gray-900 text-white rounded mb-4">
-        <button onclick="lookupPhone()" class="px-5 py-3 rounded-md bg-[color:var(--accent)] font-semibold text-black shadow hover:brightness-110">Lookup</button>
-        <pre id="phoneResult" class="mt-4 text-sm whitespace-pre-wrap"></pre>
-      </div>
+    <section class="card">
+      <h3 class="text-lg font-bold">How access works</h3>
+      <ol class="mt-3 list-decimal ml-5 muted">
+        <li>Click <strong>Access</strong> (top-right) to enter a 16-digit numeric key (format: 4-4-4-4 digits) or generate one.</li>
+        <li>Generated keys are unique and stored in the server database (Upstash recommended).</li>
+        <li>After logging in you'll be sent to your dashboard with usage stats and chat.</li>
+      </ol>
     </section>
 
-    <!-- Social Lookup -->
-    <section id="social" class="tool-section hidden">
-      <h2 class="text-2xl font-bold mb-4">🌐 Social Lookup</h2>
-      <div class="rounded-xl border border-slate-800 bg-[color:var(--panel)] p-6">
-        <p class="text-sm text-[color:var(--muted)] mb-4">Check if a username exists across platforms.</p>
-        <input id="usernameInput" type="text" placeholder="Enter Username" class="w-full p-3 bg-gray-900 text-white rounded mb-4">
-        <button onclick="lookupSocial()" class="px-5 py-3 rounded-md bg-[color:var(--accent)] font-semibold text-black shadow hover:brightness-110">Lookup</button>
-        <div id="socialResult" class="mt-4 space-y-2 text-sm"></div>
-      </div>
-    </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="w-full border-t border-slate-800 mt-12">
-    <div class="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-      <div class="text-sm text-[color:var(--muted)]">© <span id="year"></span> Stellar Multi-Tool</div>
-      <div class="text-sm text-[color:var(--muted)]">Built with ♥ on Vercel</div>
+  <!-- Access Modal -->
+  <div id="accessModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 z-50">
+    <div class="bg-[var(--panel)] rounded-xl p-6 w-[420px]">
+      <h3 class="text-xl font-bold mb-2">Account Access</h3>
+      <p class="muted text-sm mb-4">Enter your 16-digit numeric account key (format: 1234-5678-9012-3456).</p>
+
+      <div class="flex gap-2 mb-3">
+        <input id="keyPart1" maxlength="4" class="input-part w-20 p-2 bg-[#0b1114] rounded" />
+        <input id="keyPart2" maxlength="4" class="input-part w-20 p-2 bg-[#0b1114] rounded" />
+        <input id="keyPart3" maxlength="4" class="input-part w-20 p-2 bg-[#0b1114] rounded" />
+        <input id="keyPart4" maxlength="4" class="input-part w-20 p-2 bg-[#0b1114] rounded" />
+      </div>
+
+      <div class="flex gap-3">
+        <button id="generateKeyBtn" class="px-4 py-2 bg-green-600 rounded font-semibold">Generate An Account Key</button>
+        <button id="loginKeyBtn" class="px-4 py-2 bg-[var(--accent)] rounded font-semibold text-black">Log In</button>
+        <button id="closeModal" class="ml-auto px-3 py-2 bg-gray-700 rounded">Close</button>
+      </div>
+
+      <p id="accessMsg" class="muted text-sm mt-3"></p>
     </div>
-  </footer>
+  </div>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // small helpers & UI
+    const accessBtn = document.getElementById('accessBtn');
+    const accessModal = document.getElementById('accessModal');
+    const closeModal = document.getElementById('closeModal');
+    const generateKeyBtn = document.getElementById('generateKeyBtn');
+    const loginKeyBtn = document.getElementById('loginKeyBtn');
+    const accessMsg = document.getElementById('accessMsg');
 
-    function showSection(id) {
-      document.querySelectorAll('.tool-section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
+    accessBtn.addEventListener('click', () => accessModal.classList.remove('hidden'));
+    closeModal.addEventListener('click', () => accessModal.classList.add('hidden'));
+
+    function readKeyFromInputs() {
+      const p1 = document.getElementById('keyPart1').value.trim();
+      const p2 = document.getElementById('keyPart2').value.trim();
+      const p3 = document.getElementById('keyPart3').value.trim();
+      const p4 = document.getElementById('keyPart4').value.trim();
+      return `${p1}-${p2}-${p3}-${p4}`;
     }
 
-    // API calls
-    async function checkBreach() {
-      const email = document.getElementById('emailInput').value;
-      const res = await fetch(`/api/breach-checker?email=${email}`);
-      const data = await res.json();
-      document.getElementById('breachResult').textContent = JSON.stringify(data, null, 2);
-    }
-
-    async function lookupPhone() {
-      const phone = document.getElementById('phoneInput').value;
-      const res = await fetch(`/api/phone-lookup?number=${phone}`);
-      const data = await res.json();
-      document.getElementById('phoneResult').textContent = JSON.stringify(data, null, 2);
-    }
-
-    async function lookupSocial() {
-      const username = document.getElementById('usernameInput').value;
-      const res = await fetch(`/api/social-lookup?username=${username}`);
-      const data = await res.json();
-      let html = "";
-      for (const [platform, result] of Object.entries(data.results)) {
-        if (result.exists === true) {
-          html += `<div class="p-2 rounded bg-green-600/20">✅ ${platform}: <a href="${result.url}" target="_blank" class="underline">${result.url}</a></div>`;
-        } else if (result.exists === false) {
-          html += `<div class="p-2 rounded bg-red-600/20">❌ ${platform}: Not Found</div>`;
-        } else {
-          html += `<div class="p-2 rounded bg-yellow-600/20">⚠️ ${platform}: ${result.error || "Unknown"}</div>`;
-        }
+    async function generateUniqueKey() {
+      accessMsg.textContent = 'Generating...';
+      const res = await fetch('/api/auth/generate-key', { method:'POST' });
+      const json = await res.json();
+      if (json.key) {
+        const parts = json.key.split('-');
+        document.getElementById('keyPart1').value = parts[0];
+        document.getElementById('keyPart2').value = parts[1];
+        document.getElementById('keyPart3').value = parts[2];
+        document.getElementById('keyPart4').value = parts[3];
+        accessMsg.textContent = 'Key generated — press Log In to use it.';
+      } else {
+        accessMsg.textContent = 'Failed to generate key.';
       }
-      document.getElementById('socialResult').innerHTML = html;
+    }
+
+    generateKeyBtn.addEventListener('click', generateUniqueKey);
+
+    loginKeyBtn.addEventListener('click', async () => {
+      accessMsg.textContent = 'Verifying key...';
+      const key = readKeyFromInputs();
+      const res = await fetch('/api/auth/login?key=' + encodeURIComponent(key));
+      const json = await res.json();
+      if (res.ok && json.valid) {
+        // store locally and redirect to dashboard
+        localStorage.setItem('stellar_key', json.key);
+        window.location.href = '/dashboard.html';
+      } else {
+        accessMsg.textContent = json.error || 'Invalid key';
+      }
+    });
+
+    // auto-fill dashboard link if logged in
+    const storedKey = localStorage.getItem('stellar_key');
+    if (storedKey) {
+      document.getElementById('dashboardLink').href = '/dashboard.html';
     }
   </script>
+
+  <style>
+    .input-part { text-align:center; font-weight:600; color:#e6eef6; border:1px solid #21303a }
+  </style>
 </body>
 </html>
