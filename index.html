@@ -1,75 +1,126 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-black text-white">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Stellar Multi-Tool</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg:#0b0f12;
+      --panel:#0f1720;
+      --muted:#94a3b8;
+      --accent:#9333ea;   /* purple */
+      --accent-2:#06b6d4; /* cyan */
+    }
+    body { background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; }
+    html { scroll-behavior: smooth; }
+    .hidden { display:none; }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-black via-gray-900 to-gray-800 min-h-screen flex flex-col">
+<body class="min-h-screen text-slate-100">
 
-  <!-- Navbar -->
-  <header class="p-4 border-b border-gray-700 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-white">Stellar Multi-Tool</h1>
-    <nav class="space-x-6">
-      <button onclick="showPage('breach')" class="hover:text-gray-400">Breach Checker</button>
-      <button onclick="showPage('phone')" class="hover:text-gray-400">Phone Lookup</button>
-      <button onclick="showPage('social')" class="hover:text-gray-400">Social Lookup</button>
-    </nav>
+  <!-- Header -->
+  <header class="w-full border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-md bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] flex items-center justify-center font-bold text-black">SM</div>
+        <div>
+          <h1 class="text-lg font-semibold">Stellar Multi-Tool</h1>
+          <p class="text-xs text-[color:var(--muted)] -mt-0.5">OSINT & Info Tools</p>
+        </div>
+      </div>
+      <nav class="flex items-center gap-3">
+        <button onclick="showSection('breach')" class="px-4 py-2 rounded-md bg-[color:var(--panel)] text-sm border border-slate-800 hover:brightness-105">Breach Checker</button>
+        <button onclick="showSection('phone')" class="px-4 py-2 rounded-md bg-[color:var(--panel)] text-sm border border-slate-800 hover:brightness-105">Phone Lookup</button>
+        <button onclick="showSection('social')" class="px-4 py-2 rounded-md bg-[color:var(--panel)] text-sm border border-slate-800 hover:brightness-105">Social Lookup</button>
+      </nav>
+    </div>
   </header>
 
-  <!-- Pages -->
-  <main class="flex-grow p-6">
-    <!-- Breach -->
-    <section id="breach" class="page hidden">
-      <h2 class="text-xl font-semibold mb-4">🔒 Breach Checker</h2>
-      <input id="email" type="email" placeholder="Enter email"
-        class="p-2 bg-gray-800 border border-gray-600 rounded w-full mb-4">
-      <button onclick="checkBreach()" class="px-4 py-2 bg-white text-black rounded">Check</button>
-      <pre id="breach-result" class="mt-4"></pre>
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-6 py-12">
+
+    <!-- Breach Checker -->
+    <section id="breach" class="tool-section">
+      <h2 class="text-2xl font-bold mb-4">🔒 Breach Checker</h2>
+      <div class="rounded-xl border border-slate-800 bg-[color:var(--panel)] p-6">
+        <p class="text-sm text-[color:var(--muted)] mb-4">Check if an email appears in known breaches.</p>
+        <input id="emailInput" type="email" placeholder="Enter Email" class="w-full p-3 bg-gray-900 text-white rounded mb-4">
+        <button onclick="checkBreach()" class="px-5 py-3 rounded-md bg-[color:var(--accent)] font-semibold text-black shadow hover:brightness-110">Check Email</button>
+        <pre id="breachResult" class="mt-4 text-sm whitespace-pre-wrap"></pre>
+      </div>
     </section>
 
-    <!-- Phone -->
-    <section id="phone" class="page hidden">
-      <h2 class="text-xl font-semibold mb-4">📱 Phone Lookup</h2>
-      <input id="phone-input" type="text" placeholder="Enter phone number"
-        class="p-2 bg-gray-800 border border-gray-600 rounded w-full mb-4">
-      <button onclick="lookupPhone()" class="px-4 py-2 bg-white text-black rounded">Lookup</button>
-      <pre id="phone-result" class="mt-4"></pre>
+    <!-- Phone Lookup -->
+    <section id="phone" class="tool-section hidden">
+      <h2 class="text-2xl font-bold mb-4">📱 Phone Lookup</h2>
+      <div class="rounded-xl border border-slate-800 bg-[color:var(--panel)] p-6">
+        <p class="text-sm text-[color:var(--muted)] mb-4">Validate phone numbers using API.</p>
+        <input id="phoneInput" type="text" placeholder="Enter Phone Number" class="w-full p-3 bg-gray-900 text-white rounded mb-4">
+        <button onclick="lookupPhone()" class="px-5 py-3 rounded-md bg-[color:var(--accent)] font-semibold text-black shadow hover:brightness-110">Lookup</button>
+        <pre id="phoneResult" class="mt-4 text-sm whitespace-pre-wrap"></pre>
+      </div>
     </section>
 
-    <!-- Social -->
-    <section id="social" class="page hidden">
-      <h2 class="text-xl font-semibold mb-4">🌐 Social Lookup</h2>
-      <input id="username" type="text" placeholder="Enter username"
-        class="p-2 bg-gray-800 border border-gray-600 rounded w-full mb-4">
-      <button onclick="lookupSocial()" class="px-4 py-2 bg-white text-black rounded">Lookup</button>
-      <pre id="social-result" class="mt-4"></pre>
+    <!-- Social Lookup -->
+    <section id="social" class="tool-section hidden">
+      <h2 class="text-2xl font-bold mb-4">🌐 Social Lookup</h2>
+      <div class="rounded-xl border border-slate-800 bg-[color:var(--panel)] p-6">
+        <p class="text-sm text-[color:var(--muted)] mb-4">Check if a username exists across platforms.</p>
+        <input id="usernameInput" type="text" placeholder="Enter Username" class="w-full p-3 bg-gray-900 text-white rounded mb-4">
+        <button onclick="lookupSocial()" class="px-5 py-3 rounded-md bg-[color:var(--accent)] font-semibold text-black shadow hover:brightness-110">Lookup</button>
+        <div id="socialResult" class="mt-4 space-y-2 text-sm"></div>
+      </div>
     </section>
   </main>
 
+  <!-- Footer -->
+  <footer class="w-full border-t border-slate-800 mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+      <div class="text-sm text-[color:var(--muted)]">© <span id="year"></span> Stellar Multi-Tool</div>
+      <div class="text-sm text-[color:var(--muted)]">Built with ♥ on Vercel</div>
+    </div>
+  </footer>
+
   <script>
-    function showPage(page) {
-      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-      document.getElementById(page).classList.remove('hidden');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function showSection(id) {
+      document.querySelectorAll('.tool-section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    // API calls
+    async function checkBreach() {
+      const email = document.getElementById('emailInput').value;
+      const res = await fetch(`/api/breach-checker?email=${email}`);
+      const data = await res.json();
+      document.getElementById('breachResult').textContent = JSON.stringify(data, null, 2);
     }
 
     async function lookupPhone() {
-      const num = document.getElementById('phone-input').value;
-      const res = await fetch(`/api/phone-lookup?number=${num}`);
-      document.getElementById('phone-result').textContent = JSON.stringify(await res.json(), null, 2);
-    }
-
-    async function checkBreach() {
-      const email = document.getElementById('email').value;
-      const res = await fetch(`/api/breach-checker?email=${email}`);
-      document.getElementById('breach-result').textContent = JSON.stringify(await res.json(), null, 2);
+      const phone = document.getElementById('phoneInput').value;
+      const res = await fetch(`/api/phone-lookup?number=${phone}`);
+      const data = await res.json();
+      document.getElementById('phoneResult').textContent = JSON.stringify(data, null, 2);
     }
 
     async function lookupSocial() {
-      const username = document.getElementById('username').value;
+      const username = document.getElementById('usernameInput').value;
       const res = await fetch(`/api/social-lookup?username=${username}`);
-      document.getElementById('social-result').textContent = JSON.stringify(await res.json(), null, 2);
+      const data = await res.json();
+      let html = "";
+      for (const [platform, result] of Object.entries(data.results)) {
+        if (result.exists === true) {
+          html += `<div class="p-2 rounded bg-green-600/20">✅ ${platform}: <a href="${result.url}" target="_blank" class="underline">${result.url}</a></div>`;
+        } else if (result.exists === false) {
+          html += `<div class="p-2 rounded bg-red-600/20">❌ ${platform}: Not Found</div>`;
+        } else {
+          html += `<div class="p-2 rounded bg-yellow-600/20">⚠️ ${platform}: ${result.error || "Unknown"}</div>`;
+        }
+      }
+      document.getElementById('socialResult').innerHTML = html;
     }
   </script>
 </body>
