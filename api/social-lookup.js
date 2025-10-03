@@ -25,11 +25,11 @@ export default async function handler(req, res) {
 
       // --- Simple detection rules ---
       if (response.status === 200) {
-        if (platform === "Twitter" && text.includes("Sorry, that page doesn’t exist!")) {
+        if (platform === "Twitter" && text.includes("This account doesn’t exist")) {
           exists = false;
         } else if (platform === "Instagram" && (
             text.includes("Sorry, this page isn't available.") ||
-            text.includes("The link you followed may be broken"))) {
+            text.includes("The link you followed may be broken, or the page may have been removed. Go back to Instagram."))) {
           exists = false;
         } else if (platform === "GitHub" && text.includes("Join GitHub")) {
           exists = false;
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
           exists = false;
         } else if (platform === "Snapchat" && text.includes("Couldn't find")) {
           exists = false;
-        } else if (platform === "Gunslol" && text.includes("User not found")) {
+        } else if (platform === "Guns.lol" && text.includes("This user is not claimed")) {
           exists = false;
         } else {
           exists = true;
@@ -59,3 +59,4 @@ export default async function handler(req, res) {
     results
   });
 }
+
