@@ -1,76 +1,42 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-black text-white">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stellar Multi-Tool</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-br from-black via-gray-900 to-gray-800 min-h-screen flex flex-col">
+export default async function handler(req, res) {
+  const { username } = req.query;
 
-  <!-- Navbar -->
-  <header class="p-4 border-b border-gray-700 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-white">Stellar Multi-Tool</h1>
-    <nav class="space-x-6">
-      <button onclick="showPage('breach')" class="hover:text-gray-400">Breach Checker</button>
-      <button onclick="showPage('phone')" class="hover:text-gray-400">Phone Lookup</button>
-      <button onclick="showPage('social')" class="hover:text-gray-400">Social Lookup</button>
-    </nav>
-  </header>
+  if (!username) {
+    return res.status(400).json({ error: "Missing username parameter" });
+  }
 
-  <!-- Pages -->
-  <main class="flex-grow p-6">
-    <!-- Breach -->
-    <section id="breach" class="page hidden">
-      <h2 class="text-xl font-semibold mb-4">🔒 Breach Checker</h2>
-      <input id="email" type="email" placeholder="Enter email"
-        class="p-2 bg-gray-800 border border-gray-600 rounded w-full mb-4">
-      <button onclick="checkBreach()" class="px-4 py-2 bg-white text-black rounded">Check</button>
-      <pre id="breach-result" class="mt-4"></pre>
-    </section>
+  // Platforms and their profile URL patterns
+  const platforms = {
+    Twitter: `https://twitter.com/${username}`,
+    Instagram: `https://www.instagram.com/${username}`,
+    GitHub: `https://github.com/${username}`,
+    Snapchat: `https://www.snapchat.com/add/${username}`,
+    Facebook: `https://www.facebook.com/${username}`,
+    Gunslol: `https://guns.lol/${username}`,
+  };
 
-    <!-- Phone -->
-    <section id="phone" class="page hidden">
-      <h2 class="text-xl font-semibold mb-4">📱 Phone Lookup</h2>
-      <input id="phone-input" type="text" placeholder="Enter phone number"
-        class="p-2 bg-gray-800 border border-gray-600 rounded w-full mb-4">
-      <button onclick="lookupPhone()" class="px-4 py-2 bg-white text-black rounded">Lookup</button>
-      <pre id="phone-result" class="mt-4"></pre>
-    </section>
+  let results = {};
 
-    <!-- Social -->
-    <section id="social" class="page hidden">
-      <h2 class="text-xl font-semibold mb-4">🌐 Social Lookup</h2>
-      <input id="username" type="text" placeholder="Enter username"
-        class="p-2 bg-gray-800 border border-gray-600 rounded w-full mb-4">
-      <button onclick="lookupSocial()" class="px-4 py-2 bg-white text-black rounded">Lookup</button>
-      <pre id="social-result" class="mt-4"></pre>
-    </section>
-  </main>
+  // Loop through platforms
+  for (const [platform, url] of Object.entries(platforms)) {
+    try {
+      const response = await fetch(url, { method: "GET" });
 
-  <script>
-    function showPage(page) {
-      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-      document.getElementById(page).classList.remove('hidden');
+      // If 200 → account exists, if 404 → doesn't exist
+      if (response.status === 200) {
+        results[platform] = { exists: true, url };
+      } else if (response.status === 404) {
+        results[platform] = { exists: false };
+      } else {
+        results[platform] = { exists: "unknown", status: response.status };
+      }
+    } catch (err) {
+      results[platform] = { error: "⚠️ Error checking" };
     }
+  }
 
-    async function lookupPhone() {
-      const num = document.getElementById('phone-input').value;
-      const res = await fetch(`/api/phone-lookup?number=${num}`);
-      document.getElementById('phone-result').textContent = JSON.stringify(await res.json(), null, 2);
-    }
-
-    async function checkBreach() {
-      const email = document.getElementById('email').value;
-      const res = await fetch(`/api/breach-checker?email=${email}`);
-      document.getElementById('breach-result').textContent = JSON.stringify(await res.json(), null, 2);
-    }
-
-    async function lookupSocial() {
-      const username = document.getElementById('username').value;
-      const res = await fetch(`/api/social-lookup?username=${username}`);
-      document.getElementById('social-result').textContent = JSON.stringify(await res.json(), null, 2);
-    }
-  </script>
-</body>
-</html>
+  res.status(200).json({
+    username,
+    results
+  });
+}
