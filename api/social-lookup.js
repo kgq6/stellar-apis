@@ -5,7 +5,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing username parameter" });
   }
 
-  // Platforms and their profile URL patterns
   const platforms = {
     Twitter: `https://twitter.com/${username}`,
     Instagram: `https://www.instagram.com/${username}`,
@@ -17,19 +16,39 @@ export default async function handler(req, res) {
 
   let results = {};
 
-  // Loop through platforms
   for (const [platform, url] of Object.entries(platforms)) {
     try {
       const response = await fetch(url, { method: "GET" });
+      const text = await response.text();
 
-      // If 200 → account exists, if 404 → doesn't exist
+      let exists = false;
+
+      // --- Simple detection rules ---
       if (response.status === 200) {
-        results[platform] = { exists: true, url };
-      } else if (response.status === 404) {
-        results[platform] = { exists: false };
-      } else {
-        results[platform] = { exists: "unknown", status: response.status };
+        if (platform === "Twitter" && text.includes("Sorry, that page doesn’t exist!")) {
+          exists = false;
+        } else if (platform === "Instagram" && (
+            text.includes("Sorry, this page isn't available.") ||
+            text.includes("The link you followed may be broken"))) {
+          exists = false;
+        } else if (platform === "GitHub" && text.includes("Join GitHub")) {
+          exists = false;
+        } else if (platform === "Facebook" && (
+            text.includes("Page Not Found") ||
+            text.includes("content isn't available") ||
+            text.includes("You must log in"))) {
+          exists = false;
+        } else if (platform === "Snapchat" && text.includes("Couldn't find")) {
+          exists = false;
+        } else if (platform === "Gunslol" && text.includes("User not found")) {
+          exists = false;
+        } else {
+          exists = true;
+        }
       }
+
+      results[platform] = exists ? { exists: true, url } : { exists: false };
+
     } catch (err) {
       results[platform] = { error: "⚠️ Error checking" };
     }
