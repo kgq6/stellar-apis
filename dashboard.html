@@ -9,6 +9,9 @@
     :root{--bg:#0b0f12;--panel:#0f1720;--muted:#94a3b8;--accent:#9333ea;--accent-2:#06b6d4}
     body{background:var(--bg);color:#e6eef6;font-family:Inter,system-ui,Arial}
     .card{background:var(--panel);border:1px solid #1f2937;border-radius:12px;padding:1rem}
+    .muted{color:var(--muted)}
+    .tab-btn{padding:0.5rem 1rem;border-radius:8px;background:var(--panel);border:1px solid #1e293b;font-size:0.875rem}
+    .tab-btn.active{background:linear-gradient(to right,var(--accent),var(--accent-2));color:black;font-weight:bold}
   </style>
 </head>
 <body class="min-h-screen">
@@ -29,128 +32,191 @@
 </header>
 
 <main class="max-w-6xl mx-auto px-6 py-8 space-y-6">
-  <div class="flex gap-6">
-    <div class="w-2/3 space-y-6">
-      <div class="card">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-xl font-bold">Overview</h2>
-            <p class="text-sm muted">Real-time usage for your key</p>
-          </div>
-          <div>
-            <div class="text-sm muted">Key:</div>
-            <div id="displayKey" class="font-mono bg-black/20 px-3 py-1 rounded"></div>
-          </div>
+
+  <!-- Nav Tabs -->
+  <nav class="flex gap-3 mb-6">
+    <button class="tab-btn active" onclick="showTab('home')">🏠 Home</button>
+    <button class="tab-btn" onclick="showTab('tools')">🛠 Tools</button>
+    <button class="tab-btn" onclick="showTab('settings')">⚙️ Settings</button>
+    <button class="tab-btn" onclick="showTab('chat')">💬 Chat</button>
+    <button class="tab-btn hidden" id="adminTab" onclick="showTab('admin')">🔑 Admin</button>
+  </nav>
+
+  <!-- Home -->
+  <section id="home" class="tab-content">
+    <div class="card mb-6">
+      <h2 class="text-xl font-bold mb-3">Overview</h2>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="p-4 bg-black/10 rounded">
+          <div class="text-sm muted">Total Lookups</div>
+          <div id="totalLookups" class="text-2xl font-bold">—</div>
         </div>
-
-        <div class="mt-4 grid grid-cols-3 gap-4">
-          <div class="p-4 bg-black/10 rounded">
-            <div class="text-sm muted">Total Lookups</div>
-            <div id="totalLookups" class="text-2xl font-bold">—</div>
-          </div>
-          <div class="p-4 bg-black/10 rounded">
-            <div class="text-sm muted">Remaining</div>
-            <div id="remaining" class="text-2xl font-bold">—</div>
-          </div>
-          <div class="p-4 bg-black/10 rounded">
-            <div class="text-sm muted">Active Since</div>
-            <div id="activeSince" class="text-2xl font-bold">—</div>
-          </div>
+        <div class="p-4 bg-black/10 rounded">
+          <div class="text-sm muted">Remaining</div>
+          <div id="remaining" class="text-2xl font-bold">—</div>
         </div>
-      </div>
-
-      <div class="card">
-        <h3 class="font-bold">Lookup History</h3>
-        <div id="historyList" class="mt-3 text-sm muted max-h-56 overflow-auto"></div>
-      </div>
-
-      <div class="card">
-        <h3 class="font-bold">Activate / Add Key</h3>
-        <p class="muted text-sm">If you have another key, activate it here (this consumes and attaches it to your account).</p>
-        <div class="flex gap-2 mt-3">
-          <input id="activateInput" class="flex-1 p-2 bg-[#071015] rounded" placeholder="XXXX-XXXX-XXXX-XXXX" />
-          <button id="activateBtn" class="px-4 py-2 bg-[var(--accent)] text-black rounded font-semibold">Activate</button>
-        </div>
-        <p id="activateMsg" class="muted text-sm mt-2"></p>
-      </div>
-    </div>
-
-    <div class="w-1/3 space-y-6">
-      <div class="card">
-        <h3 class="font-bold">Live Chat</h3>
-        <div id="chatBox" class="mt-3 h-64 overflow-auto text-sm muted p-2 bg-black/10 rounded"></div>
-        <div class="mt-3 flex gap-2">
-          <input id="chatInput" class="flex-1 p-2 bg-[#071015] rounded" placeholder="Say hi..." />
-          <button id="chatSend" class="px-3 py-2 rounded bg-[var(--accent)] text-black">Send</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3 class="font-bold">Quick Links</h3>
-        <div class="mt-3 text-sm muted">
-          <p><a href="/" class="underline">Home</a></p>
-          <p class="mt-2"><a href="#" id="regenLocal" class="underline">Regenerate local test key</a></p>
+        <div class="p-4 bg-black/10 rounded">
+          <div class="text-sm muted">Expires</div>
+          <div id="expiresAt" class="text-2xl font-bold">—</div>
         </div>
       </div>
     </div>
-  </div>
+
+    <div class="card">
+      <h3 class="font-bold mb-2">Lookup History</h3>
+      <div id="historyList" class="text-sm muted max-h-64 overflow-auto"></div>
+    </div>
+  </section>
+
+  <!-- Tools -->
+  <section id="tools" class="tab-content hidden">
+    <div class="card mb-6">
+      <h3 class="text-lg font-bold mb-2">Breach Checker</h3>
+      <input id="emailInput" class="w-full p-2 bg-[#111827] rounded mb-3" placeholder="Enter email">
+      <button onclick="doLookup('breach', document.getElementById('emailInput').value)" class="px-4 py-2 bg-[var(--accent)] text-black rounded">Check</button>
+      <div id="breachResult" class="mt-3 text-sm"></div>
+    </div>
+
+    <div class="card mb-6">
+      <h3 class="text-lg font-bold mb-2">Phone Lookup</h3>
+      <input id="phoneInput" class="w-full p-2 bg-[#111827] rounded mb-3" placeholder="Enter phone number">
+      <button onclick="doLookup('phone', document.getElementById('phoneInput').value)" class="px-4 py-2 bg-[var(--accent)] text-black rounded">Lookup</button>
+      <div id="phoneResult" class="mt-3 text-sm"></div>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-bold mb-2">Social Lookup</h3>
+      <input id="usernameInput" class="w-full p-2 bg-[#111827] rounded mb-3" placeholder="Enter username">
+      <button onclick="doLookup('social', document.getElementById('usernameInput').value)" class="px-4 py-2 bg-[var(--accent)] text-black rounded">Lookup</button>
+      <div id="socialResult" class="mt-3 text-sm"></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="settings" class="tab-content hidden">
+    <div class="card">
+      <h3 class="font-bold text-lg mb-4">⚙️ Settings</h3>
+      <label class="block mb-2 text-sm">Username</label>
+      <input id="usernameInputSettings" class="w-full p-2 bg-[#111827] rounded mb-4">
+      <label class="block mb-2 text-sm">Profile Picture URL</label>
+      <input id="pfpInputSettings" class="w-full p-2 bg-[#111827] rounded mb-4">
+      <button id="saveSettingsBtn" class="px-4 py-2 bg-[var(--accent)] rounded text-black font-bold">Save</button>
+      <p id="settingsMsg" class="muted text-sm mt-3"></p>
+    </div>
+  </section>
+
+  <!-- Chat -->
+  <section id="chat" class="tab-content hidden">
+    <div class="card">
+      <h3 class="font-bold">Live Chat</h3>
+      <div id="chatBox" class="mt-3 h-64 overflow-auto text-sm muted p-2 bg-black/10 rounded"></div>
+      <div class="mt-3 flex gap-2">
+        <input id="chatInput" class="flex-1 p-2 bg-[#071015] rounded" placeholder="Say hi...">
+        <button id="chatSend" class="px-3 py-2 rounded bg-[var(--accent)] text-black">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin -->
+  <section id="admin" class="tab-content hidden">
+    <div class="card mb-6">
+      <h3 class="font-bold text-lg mb-4">🛠 Admin Panel</h3>
+      <button id="generateAdminKey" class="px-4 py-2 bg-green-600 rounded font-semibold">Generate Key</button>
+      <p id="adminMsg" class="muted text-sm mt-2"></p>
+    </div>
+
+    <div class="card">
+      <h4 class="font-semibold mb-2">All Keys</h4>
+      <div id="keysList" class="text-sm muted max-h-64 overflow-auto"></div>
+    </div>
+  </section>
+
 </main>
 
 <script>
   const KEY = localStorage.getItem('stellar_key');
   if (!KEY) {
-    alert('No key found. Please log in via the homepage Access modal first.');
+    alert('No key found. Please log in first.');
     window.location.href = '/';
   }
 
-  document.getElementById('displayKey').textContent = KEY;
+  // Tabs
+  function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.remove('hidden');
+    document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+  }
+
+  // Logout
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('stellar_key');
     window.location.href = '/';
   });
 
-  // fetch stats periodically
+  // Stats + history
   async function fetchStats() {
     const res = await fetch('/api/user/stats?key=' + encodeURIComponent(KEY));
-    if (!res.ok) {
-      const j = await res.json();
-      alert(j.error || 'Failed to fetch stats');
-      return;
-    }
-    const data = await res.json();
-    document.getElementById('totalLookups').textContent = data.total || 0;
-    document.getElementById('remaining').textContent = data.remaining ?? '—';
-    document.getElementById('activeSince').textContent = data.activeSince || '—';
+    const j = await res.json();
+    if (!res.ok) return;
 
-    // history
+    document.getElementById('totalLookups').textContent = j.total;
+    document.getElementById('remaining').textContent = j.remaining;
+    document.getElementById('expiresAt').textContent = j.expiresAt ? new Date(j.expiresAt).toLocaleDateString() : '—';
+
     const historyDiv = document.getElementById('historyList');
     historyDiv.innerHTML = '';
-    (data.history || []).slice().reverse().forEach(h => {
+    (j.history || []).slice().reverse().forEach(h => {
       const el = document.createElement('div');
       el.className = 'mb-2';
       el.innerHTML = `<div class="text-xs">${new Date(h.ts).toLocaleString()}</div><div>${h.tool} — ${h.query}</div>`;
       historyDiv.appendChild(el);
     });
+
+    if (j.isAdmin) {
+      document.getElementById('adminTab').classList.remove('hidden');
+    }
   }
-
-  // initial
   fetchStats();
-  setInterval(fetchStats, 5000); // refresh every 5s
+  setInterval(fetchStats, 5000);
 
-  // activate key
-  document.getElementById('activateBtn').addEventListener('click', async () => {
-    const k = document.getElementById('activateInput').value.trim();
-    const res = await fetch('/api/auth/activate', {
+  // Lookup tools
+  async function doLookup(tool, query) {
+    const res = await fetch('/api/lookup/log', {
       method:'POST',
-      headers:{'content-type':'application/json'},
-      body: JSON.stringify({ key: k, userKey: KEY })
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ key: KEY, tool, query, ip: '' })
     });
     const j = await res.json();
-    document.getElementById('activateMsg').textContent = j.message || j.error || 'Done';
-    fetchStats();
+
+    const out = (msg) => `<div class="p-2 bg-black/20 rounded mb-2">${msg}</div>`;
+
+    if (!res.ok) {
+      if (tool === 'breach') document.getElementById('breachResult').innerHTML = out(j.error);
+      if (tool === 'phone') document.getElementById('phoneResult').innerHTML = out(j.error);
+      if (tool === 'social') document.getElementById('socialResult').innerHTML = out(j.error);
+      return;
+    }
+
+    if (tool === 'breach') document.getElementById('breachResult').innerHTML = out('✅ Lookup done for ' + query);
+    if (tool === 'phone') document.getElementById('phoneResult').innerHTML = out('✅ Lookup done for ' + query);
+    if (tool === 'social') document.getElementById('socialResult').innerHTML = out('✅ Lookup done for ' + query);
+  }
+
+  // Settings
+  document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+    const username = document.getElementById('usernameInputSettings').value;
+    const pfp = document.getElementById('pfpInputSettings').value;
+    const res = await fetch('/api/user/settings', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ key: KEY, username, pfp })
+    });
+    const j = await res.json();
+    document.getElementById('settingsMsg').textContent = j.success ? '✅ Saved!' : j.error;
   });
 
-  // chat
+  // Chat
   async function pollChat() {
     const res = await fetch('/api/chat/fetch?limit=50');
     const j = await res.json();
@@ -158,7 +224,13 @@
     box.innerHTML = '';
     j.messages.forEach(m => {
       const el = document.createElement('div');
-      el.innerHTML = `<div class="text-xs">${new Date(m.ts).toLocaleTimeString()} <span class="muted">- ${m.keyMask}</span></div><div>${m.text}</div>`;
+      el.className = 'mb-2';
+      el.innerHTML = `
+        <div class="flex items-center gap-2">
+          <img src="${m.pfp || 'https://placehold.co/24'}" class="w-6 h-6 rounded-full">
+          <strong>${m.username || 'Anonymous'}</strong>
+        </div>
+        <div class="ml-8">${m.text}</div>`;
       box.appendChild(el);
     });
     box.scrollTop = box.scrollHeight;
@@ -171,23 +243,65 @@
     if (!txt) return;
     await fetch('/api/chat/send', {
       method:'POST',
-      headers:{'content-type':'application/json'},
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ key: KEY, text: txt })
     });
     document.getElementById('chatInput').value = '';
     pollChat();
   });
 
-  // regen local (dev)
-  document.getElementById('regenLocal').addEventListener('click', async (e) => {
-    e.preventDefault();
-    const res = await fetch('/api/auth/generate-key', { method:'POST' });
+  // Admin panel
+  async function loadKeys() {
+    const res = await fetch('/api/admin/list-keys?adminKey=' + encodeURIComponent(KEY));
     const j = await res.json();
-    if (j.key) {
-      localStorage.setItem('stellar_key', j.key);
-      alert('New key saved locally: ' + j.key);
-      location.reload();
-    } else alert('Failed to generate');
+    const container = document.getElementById('keysList');
+    if (!res.ok) {
+      container.textContent = j.error || 'Failed to load keys';
+      return;
+    }
+    container.innerHTML = '';
+    j.keys.forEach(k => {
+      const div = document.createElement('div');
+      div.className = 'p-2 border-b border-slate-800';
+      div.innerHTML = `
+        <div><strong>${k.key}</strong> ${k.banned ? '🚫 Banned' : ''}</div>
+        <div class="text-xs">Remaining: ${k.remaining}, Owner: ${k.owner || '—'}, Expires: ${new Date(k.expiresAt).toLocaleString()}</div>
+        <div class="mt-1 flex gap-2">
+          <button onclick="banKey('${k.key}')" class="px-2 py-1 bg-red-600 rounded text-xs">Ban</button>
+          <button onclick="addTime('${k.key}', 60)" class="px-2 py-1 bg-blue-600 rounded text-xs">+1h</button>
+          <button onclick="addTime('${k.key}', -60)" class="px-2 py-1 bg-yellow-600 rounded text-xs">-1h</button>
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  async function banKey(target) {
+    await fetch('/api/admin/ban-key', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ adminKey: KEY, targetKey: target })
+    });
+    loadKeys();
+  }
+
+  async function addTime(target, minutes) {
+    await fetch('/api/admin/adjust-time', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ adminKey: KEY, targetKey: target, minutes })
+    });
+    loadKeys();
+  }
+
+  document.getElementById('generateAdminKey').addEventListener('click', async () => {
+    const res = await fetch('/api/admin/generate-key', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ adminKey: KEY })
+    });
+    const j = await res.json();
+    document.getElementById('adminMsg').textContent = j.key ? `✅ Generated: ${j.key}` : j.error;
+    loadKeys();
   });
 </script>
 </body>
